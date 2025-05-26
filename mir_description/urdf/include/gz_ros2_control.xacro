@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:macro name="gz_ros2_control" params="prefix">
+    <gazebo>
+      <plugin filename="gz-sim-joint-controller-system" name="gz::sim::systems::JointController">
+        <joint_name>${prefix}left_wheel_joint</joint_name>
+        <joint_name>${prefix}right_wheel_joint</joint_name>
+      </plugin>
+      
+      <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <robot_param>robot_description</robot_param>
+        <robot_param_node>robot_state_publisher</robot_param_node>
+        <parameters>$(find mir_gazebo)/config/mir_controllers.yaml</parameters>
+      </plugin>
+    </gazebo>
+  </xacro:macro>
+</robot>

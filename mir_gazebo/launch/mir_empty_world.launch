@@ -17,9 +17,9 @@
       <remap from="$(arg namespace)/mobile_base_controller/cmd_vel" to="$(arg namespace)/cmd_vel" />
       <remap from="$(arg namespace)/mobile_base_controller/odom"    to="$(arg namespace)/odom" />
 
-      <include file="$(find gazebo_ros)/launch/empty_world.launch">
-        <arg name="world_name" value="$(arg world_name)"/>
-        <arg name="paused" value="true" />
+      <include file="$(find ros_gz_sim)/launch/gz_sim.launch.py">
+        <arg name="gz_args" value="-r -s -v4 $(arg world_name)" />
+        <arg name="on_exit_shutdown" value="true" />
         <arg name="gui" value="$(arg gui)" />
       </include>
     </group>
@@ -43,9 +43,9 @@
       <remap from="mobile_base_controller/cmd_vel" to="cmd_vel" />
       <remap from="mobile_base_controller/odom"    to="odom" />
 
-      <include file="$(find gazebo_ros)/launch/empty_world.launch">
-        <arg name="world_name" value="$(arg world_name)"/>
-        <arg name="paused" value="true" />
+      <include file="$(find ros_gz_sim)/launch/gz_sim.launch.py">
+        <arg name="gz_args" value="-r -s -v4 $(arg world_name)" />
+        <arg name="on_exit_shutdown" value="true" />
         <arg name="gui" value="$(arg gui)" />
       </include>
     </group>

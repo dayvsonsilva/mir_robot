@@ -15,9 +15,15 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>ros_gz_sim</depend>
-  <depend>ros_gz_bridge</depend>
-  <depend>ros_gz_image</depend>
+  <!-- Gazebo Harmonic dependencies -->
+  <depend>gz_sim_vendor</depend>
+  <depend>gz_transport_vendor</depend>
+  <depend>gz_math_vendor</depend>
+  <depend>gz_common_vendor</depend>
+  <depend>sdformat_vendor</depend>
+  
+  <!-- Mantendo compatibilidade com pacotes existentes -->
+  <depend>gazebo_ros</depend>
   <depend>rviz2</depend>
   <depend>ira_laser_tools</depend>
   <depend>teleop_twist_keyboard</depend>
@@ -34,6 +40,6 @@
 
   <export>
     <build_type>ament_cmake</build_type>
-    <gz_sim_path>${prefix}/worlds/include</gz_sim_path>
+    <gazebo_ros gazebo_model_path="${prefix}/worlds/include"/>
   </export>
 </package>

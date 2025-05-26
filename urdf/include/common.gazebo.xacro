@@ -3,13 +3,13 @@
 
   <xacro:macro name="controller_plugin_gazebo" params="robot_namespace">
     <gazebo>
-      <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
-        <robot_param>robot_description</robot_param>
-        <robot_param_node>robot_state_publisher</robot_param_node>
+      <!-- Usando o plugin nativo do Gazebo Harmonic para controle -->
+      <plugin filename="gz-sim-joint-controller-system" name="gz::sim::systems::JointController">
+        <robot_description>robot_description</robot_description>
         <xacro:unless value="${robot_namespace == ''}">
           <robot_namespace>${robot_namespace}</robot_namespace>
         </xacro:unless>
-        <control_period>0.001</control_period>
+        <update_rate>1000</update_rate>
       </plugin>
     </gazebo>
   </xacro:macro>

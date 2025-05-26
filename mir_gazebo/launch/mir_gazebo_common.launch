@@ -18,8 +18,9 @@
   </include>
 
   <!-- Spawn the robot into Gazebo -->
-  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model $(arg model_name)
-    -x $(arg robot_x) -y $(arg robot_y) -Y $(arg robot_yaw) " />
+  <node name="spawn_urdf" pkg="ros_gz_sim" type="create" args="-entity $(arg model_name)
+    -topic robot_description
+    -x $(arg robot_x) -y $(arg robot_y) -z 0.01 -Y $(arg robot_yaw)" />
 
   <!-- Load ros_control controller configurations -->
   <rosparam file="$(find mir_description)/config/joint_state_controller.yaml" command="load" />

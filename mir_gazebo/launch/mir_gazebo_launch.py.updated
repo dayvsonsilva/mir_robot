@@ -25,6 +25,9 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+#
+# Author: relffok
+# Updated for ROS 2 Jazzy: 2025
 
 import os
 
@@ -32,7 +35,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.conditions import IfCondition
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction, SetLaunchConfiguration
-from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.launch_description_sources import PythonLaunchDescriptionSource, FrontendLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
@@ -41,7 +44,9 @@ def generate_launch_description():
 
     mir_description_dir = get_package_share_directory('mir_description')
     mir_gazebo_dir = get_package_share_directory('mir_gazebo')
-    ros_gz_sim_dir = get_package_share_directory('ros_gz_sim')
+    
+    # Atualizado para usar gz_sim_vendor em vez de gazebo_ros
+    gz_sim_dir = get_package_share_directory('gz_sim_vendor')
 
     rviz_config_file = LaunchConfiguration('rviz_config_file')
 
@@ -91,22 +96,20 @@ def generate_launch_description():
 
     declare_gui_arg = DeclareLaunchArgument('gui', default_value='true', description='Set to "false" to run headless.')
 
-    # Atualizado para usar ros_gz_sim em vez de gazebo_ros
+    # Atualizado para usar o launch file do gz_sim_vendor
     launch_gazebo_world = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(os.path.join(ros_gz_sim_dir, 'launch', 'gz_sim.launch.py')),
+        PythonLaunchDescriptionSource(os.path.join(gz_sim_dir, 'share', 'gz_sim_vendor', 'launch', 'gz_sim.launch.py')),
         launch_arguments={
-            'gz_args': ['-r -v4 ', mir_gazebo_dir, '/worlds/', LaunchConfiguration('world'), '.world'],
-            'on_exit_shutdown': 'true',
+            'verbose': LaunchConfiguration('verbose'),
             'gui': LaunchConfiguration('gui'),
+            'world': [mir_gazebo_dir, '/worlds/', LaunchConfiguration('world'), '.world'],
         }.items(),
     )
 
-    # Atualizado para usar a versão Python do robot_state_publisher
     launch_mir_description = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(os.path.join(mir_description_dir, 'launch', 'robot_state_publisher.py'))
+        FrontendLaunchDescriptionSource(os.path.join(mir_description_dir, 'launch', 'robot_state_publisher.launch'))
     )
 
-    # Atualizado para usar a versão Python do mir_gazebo_common
     launch_mir_gazebo_common = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(mir_gazebo_dir, 'launch', 'include', 'mir_gazebo_common.py'))
     )
@@ -120,20 +123,17 @@ def generate_launch_description():
             pass
         return [SetLaunchConfiguration('robot_name', robot_name)]
 
-    # Atualizado para usar ros_gz_sim em vez de gazebo_ros
+    # Atualizado para usar o spawn_entity do gz_sim_vendor
     spawn_robot = Node(
-        package='ros_gz_sim',
-        executable='create',
+        package='gz_sim_vendor',
+        executable='spawn_entity',
         arguments=[
             '-entity',
             LaunchConfiguration('robot_name'),
             '-topic',
             'robot_description',
-            '-x', LaunchConfiguration('robot_x'),
-            '-y', LaunchConfiguration('robot_y'),
-            '-z', '0.01',
-            '-Y', LaunchConfiguration('robot_yaw'),
-        ],
+            '-b',
+        ],  # bond node to gazebo model,
         namespace=LaunchConfiguration('namespace'),
         output='screen',
     )
