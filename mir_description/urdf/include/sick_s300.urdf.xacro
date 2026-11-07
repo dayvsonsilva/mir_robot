@@ -13,8 +13,7 @@
       <visual>
         <origin xyz="0.0 0.0 0.0" rpy="${pi} 0 0" />
         <geometry>
-          <!-- Substituindo mesh por geometria simples para compatibilidade com dartsim -->
-          <cylinder radius="${laser_y/2}" length="${laser_z}"/>
+          <mesh filename="package://mir_description/meshes/visual/sick_lms-100.stl" />
         </geometry>
         <material name="black">
           <color rgba="0.0 0.0 0.0 1.0"/>
@@ -23,7 +22,7 @@
       <collision>
         <origin xyz="0.0 0.0 0.0" rpy="${pi} 0 0" />
         <geometry>
-          <!-- Substituindo mesh por geometria simples para compatibilidade com dartsim -->
+          <!-- Primitiva em vez de malha por causa do dartsim (Gazebo Harmonic). -->
           <cylinder radius="${laser_y/2}" length="${laser_z}"/>
         </geometry>
       </collision>

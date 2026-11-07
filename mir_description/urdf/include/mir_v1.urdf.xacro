@@ -2,6 +2,9 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:arg name="mir_type" default="mir_100" />      <!-- The MiR variant. Can be "mir_100" or "mir_250" for now.-->
   <xacro:property name="mir_type" value="$(arg mir_type)" />  <!-- necessary because args cannot be accessed inside ${} expressions -->
+  <!-- Plugin gz_ros2_control do Gazebo. Desligue (false) para usar a descrição sem o mir_gazebo,
+       por exemplo no RViz ou ao montar a MiR dentro de outro robô. -->
+  <xacro:arg name="use_gz_ros2_control" default="true" />
 
   <xacro:include filename="$(find mir_description)/urdf/include/common_properties.urdf.xacro" />
   <xacro:include filename="$(find mir_description)/urdf/include/imu.gazebo.urdf.xacro" />
@@ -103,15 +106,15 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <!-- Substituindo mesh por geometria simples para compatibilidade com dartsim -->
-          <cylinder radius="0.05" length="0.1"/>
+          <mesh filename="package://mir_description/meshes/visual/caster_wheel_base.stl" />
         </geometry>
         <xacro:insert_block name="material_silver" />
       </visual>
       <collision>
-        <origin xyz="0 0 0" rpy="0 0 0" />
+        <!-- Primitiva em vez de malha por causa do dartsim (Gazebo Harmonic). A malha
+             visual vai de z = -0,122 a 0, então o cilindro fica abaixo da junta. -->
+        <origin xyz="0 0 -0.06" rpy="0 0 0" />
         <geometry>
-          <!-- Substituindo mesh por geometria simples para compatibilidade com dartsim -->
           <cylinder radius="0.05" length="0.1"/>
         </geometry>
       </collision>
@@ -174,15 +177,15 @@
       <visual>
         <origin xyz="${mir_act_wheel_dx} 0 0" rpy="0 0 0" />
         <geometry>
-          <!-- Substituindo mesh por geometria simples para compatibilidade com dartsim -->
-          <box size="0.9 0.58 0.3"/>
+          <mesh filename="package://mir_description/meshes/visual/${mir_type}_base.stl" />
         </geometry>
         <xacro:insert_block name="material_white" />
       </visual>
       <collision>
-        <origin xyz="${mir_act_wheel_dx} 0 0" rpy="0 0 0" />
+        <!-- Primitiva em vez de malha por causa do dartsim (Gazebo Harmonic). A malha
+             do corpo vai de z = 0,02 a 0,354, então a caixa fica centrada em 0,20. -->
+        <origin xyz="${mir_act_wheel_dx} 0 0.20" rpy="0 0 0" />
         <geometry>
-          <!-- Substituindo mesh por geometria simples para compatibilidade com dartsim -->
           <box size="0.9 0.58 0.3"/>
         </geometry>
       </collision>
@@ -280,6 +283,8 @@
     <xacro:p3d_base_controller prefix="${prefix}" />
     
     <!-- Adiciona o plugin gz_ros2_control para integração com ROS 2 Control -->
-    <xacro:gz_ros2_control prefix="${prefix}" />
+    <xacro:if value="$(arg use_gz_ros2_control)">
+      <xacro:gz_ros2_control prefix="${prefix}" />
+    </xacro:if>
   </xacro:macro>
 </robot>
